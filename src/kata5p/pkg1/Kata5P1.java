@@ -20,11 +20,10 @@ public class Kata5P1 {
     static Connection con;
     static String ID, Name, Apellidos, Departamento;
     public static void main(String[] args) {
-        connection();
-        
+        if(connection()) createTable(); //showFields();        
     }
 
-    private static void connection() {
+    private static boolean connection() {
         String url = "jdbc:sqlite:KATA5.db";
         
         con = null;
@@ -33,10 +32,11 @@ public class Kata5P1 {
           con = DriverManager.getConnection(url);
           System.out.println("Conexion estabelcida");
           
-          showFields();
         } catch(SQLException e){
             System.out.println(e.getMessage());
+            return false;
         }
+        return true;
     }
 
     private static void showFields() {
@@ -58,6 +58,20 @@ public class Kata5P1 {
             }
         } catch(SQLException e) {
             System.out.println(e.getMessage());                
+        }
+    }
+
+    private static void createTable() {
+        String sql = "CREATE TABLE IF NOT EXISTS EMAIL(\n"
+                + "ID integer PRIMARY KEY AUTOINCREMENT, \n"
+                + "Mail text NOT NULL);";
+                
+        try (Statement stmt = con.createStatement()) {
+            // Se crea la nueva tabla
+            if(stmt.execute(sql)) System.out.println("Tabla creada");
+            else System.out.println("Tabla ya creada");
+        } catch (SQLException e) {
+            System.out.println(e.getMessage());
         }
     }
     
