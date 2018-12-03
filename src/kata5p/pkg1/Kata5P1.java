@@ -5,11 +5,16 @@
  */
 package kata5p.pkg1;
 
+import java.io.FileNotFoundException;
+import java.io.IOException;
 import java.sql.Connection;
 import java.sql.DriverManager;
+import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.sql.Statement;
+import java.util.Iterator;
+import java.util.List;
 
 /**
  *
@@ -19,8 +24,9 @@ public class Kata5P1 {
     
     static Connection con;
     static String ID, Name, Apellidos, Departamento;
-    public static void main(String[] args) {
-        if(connection()) createTable(); //showFields();        
+    public static void main(String[] args) throws FileNotFoundException, IOException, SQLException {
+        ReadFile rd = new ReadFile("email.txt");
+        if(connection()) putMails(rd);//createTable(); //showFields();        
     }
 
     private static boolean connection() {
@@ -72,6 +78,17 @@ public class Kata5P1 {
             else System.out.println("Tabla ya creada");
         } catch (SQLException e) {
             System.out.println(e.getMessage());
+        }
+    }
+
+    private static void putMails(ReadFile rd) throws IOException, SQLException {
+        Iterator<String> iterator = rd.readAll().iterator();
+        String sql = "INSERT INTO EMAIL(Mail) VALUES(?)";
+        
+        PreparedStatement pstm = con.prepareStatement(sql);
+        while(iterator.hasNext()){
+            pstm.setString(1, iterator.next());
+            pstm.executeUpdate();
         }
     }
     
